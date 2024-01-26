@@ -1,0 +1,59 @@
+<CenterBar>:
+    orientation: 'horizontal'
+    size_hint:1,1
+    pos_hint:{'left':1}
+    line_color: "black"
+
+<SideBar>:
+    orientation: 'horizontal'
+    size_hint:None,1
+    adaptive_width:True
+    pos_hint:{'left':1}
+    #line_color: "red"
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint:None,None
+        adaptive_height:True
+        adaptive_width:True  
+        #md_bg_color: "#FFF123"
+        #line_color: "black"
+        pos_hint:{'top':1}
+        spacing:10
+        padding:"0dp","40dp","0dp","0dp"
+
+        Image:
+            source: 'images/logo.png'
+            size_hint:None,None
+            width :"90dp"
+            height: "90dp"
+            pos_hint:{"center_x":0.5}
+            
+
+        MDRectangleFlatIconButton:
+            icon: "calendar-text-outline"
+            text: "Export ADUsers"
+            theme_text_color: "Custom"
+            text_color: "black"
+            theme_icon_color: "Custom"
+            icon_color: "orange"
+            line_color: 0, 0, 0, 0
+        
+        MDRectangleFlatIconButton:
+            icon: "account-details"
+            text: "ADUsers"
+            theme_text_color: "Custom"
+            text_color: "black"
+            theme_icon_color: "Custom"
+            icon_color: "orange"
+            line_color: 0, 0, 0, 0
+
+
+<HomeScreen>:
+    MDBoxLayout:
+        orientation:'horizontal'
+        md_bg_color:"#FFFFFF"
+
+        SideBar:
+        
+        CenterBar:

@@ -1,15 +1,77 @@
-<CenterBar>:
+<SpecificButton>:
+    elevation:1
+    shadow_radius:10
+    shadow_offset: (-1, 2)
+
+<TitleBar>:
+    orientation: 'vertical'
+    size_hint:1,None
+    adaptive_height:True  
+    md_bg_color: "#FFFFFF"
+    pos_hint:{'top':1}
+    padding:"0dp","10dp","0dp","10dp"
+    elevation: 2
+    shadow_offset: (-4, 2)
+    
+
+    MDLabel:
+        text:"ITX-AD"
+        halign: "center"
+        font_style:"Body2"
+        size_hint:None,None
+        adaptive_size:True
+        pos_hint:{'center_x':0.5}
+        bold: True
+
+
+
+<FilterWidget>:
     orientation: 'horizontal'
-    size_hint:1,1
-    pos_hint:{'left':1}
-    line_color: "black"
+    size_hint:None,None
+    adaptive_size:True
+
+    MDIcon:
+        icon: "filter-outline"
+        size_hint:None,None
+        adaptive_size:True
+    
+    MDLabel:
+        text:"Filters"
+        size_hint:None,None
+        adaptive_size:True
+
+    MDIcon:
+        icon:"menu-down"
+        size_hint:None,None
+        adaptive_size:True
+
+        
+
+<CenterBar>:
+    orientation: 'vertical'
+    TitleBar:
+
+    MDScreenManager:
+        id:sm
+
+        HomeScreen:
+            name:"export_adusers"
+
+        UsersScreen:
+            name:"adusers"
+
+
+    
 
 <SideBar>:
     orientation: 'horizontal'
     size_hint:None,1
     adaptive_width:True
     pos_hint:{'left':1}
+    md_bg_color: "#FFFFFF"
     #line_color: "red"
+    elevation: 2
+
 
     MDBoxLayout:
         orientation: 'vertical'
@@ -25,35 +87,172 @@
         Image:
             source: 'images/logo.png'
             size_hint:None,None
-            width :"90dp"
-            height: "90dp"
+            width :"120dp"
+            height: "120dp"
             pos_hint:{"center_x":0.5}
-            
-
-        MDRectangleFlatIconButton:
-            icon: "calendar-text-outline"
-            text: "Export ADUsers"
-            theme_text_color: "Custom"
-            text_color: "black"
-            theme_icon_color: "Custom"
-            icon_color: "orange"
-            line_color: 0, 0, 0, 0
         
-        MDRectangleFlatIconButton:
-            icon: "account-details"
-            text: "ADUsers"
-            theme_text_color: "Custom"
-            text_color: "black"
-            theme_icon_color: "Custom"
-            icon_color: "orange"
-            line_color: 0, 0, 0, 0
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint:None,None
+            adaptive_height:True
+            adaptive_width:True  
+            padding:"0dp","50dp","0dp","0dp"
+
+            MDRectangleFlatIconButton:
+                icon: "calendar-text-outline"
+                text: "Export ADUsers"
+                theme_text_color: "Custom"
+                text_color: "black"
+                theme_icon_color: "Custom"
+                icon_color: "orange"
+                line_color: 0, 0, 0, 0
+                on_release: app.Export_ADUsers_clicked()
+            
+            MDRectangleFlatIconButton:
+                icon: "account-details"
+                text: "ADUsers"
+                theme_text_color: "Custom"
+                text_color: "black"
+                theme_icon_color: "Custom"
+                icon_color: "orange"
+                line_color: 0, 0, 0, 0
+                on_release: app.ADUsers_clicked()
 
 
 <HomeScreen>:
     MDBoxLayout:
-        orientation:'horizontal'
-        md_bg_color:"#FFFFFF"
+        id:div1
+        orientation: 'vertical'
+        size_hint:1,1 
+        #md_bg_color: "#FFF123"
+        #line_color: "blue"
 
-        SideBar:
+        MDBoxLayout:
+            id:div1_1
+            orientation: 'vertical'
+            size_hint:1,None
+            adaptive_height:True
+            #md_bg_color: "#FFF123"
+            #line_color: "blue"
+            padding:0,100,50,0
+
+
+            MDBoxLayout:
+                id:div1_1_1
+                orientation: 'horizontal'
+                size_hint:1,None
+                adaptive_height:True  
+                #md_bg_color: "#FFF123"
+                #line_color: "red"
+                line_width:1
+                padding:50,0,0,0
+
+                FilterWidget:
+                    line_color:"#3333CC"
+
+            MDBoxLayout:
+                line_color:"gray"
+                size_hint:1,None
+                height:1
+                padding:0,0,30,0
+
+
+            MDBoxLayout:
+                id:div1_1_2
+                orientation: 'horizontal'
+                size_hint:1,None
+                adaptive_height:True  
+                #md_bg_color: "#FFF123"
+                #line_color: "green"
+                spacing:"10dp"
+                padding:50,20,0,0
+
+                SpecificButton:
+                    text:"OU"
+                    text_color: 0, 0, 0, 1
+                    line_color:0,0,0,0
+                    md_bg_color: "#FFFFFF"
+                    elevation:1
+                    shadow_radius:10
+                    shadow_offset: (-1, 2)
+            
+                SpecificButton:
+                    text:"Group"
+                    text_color: 0, 0, 0, 1
+                    line_color:0,0,0,0
+                    md_bg_color: "#FFFFFF"
+
+
+                SpecificButton:
+                    text:"User"
+                    text_color: 0, 0, 0, 1
+                    line_color:0,0,0,0
+                    md_bg_color: "#FFFFFF"
+
+                SpecificButton:
+                    text:"Submit"
+                    text_color: 1, 1, 1, 1
+                    md_bg_color:"#3333CC"
+                    line_color:0,0,0,0
+
+
+
+        MDBoxLayout:
+            id:div1_2
+            orientation: 'vertical'
+            size_hint:1,1
+            #md_bg_color: "#FFF123"
+
+
+<UsersScreen>:
+    MDBoxLayout:
+        id:div1
+        orientation: 'vertical'
+        size_hint:1,1 
+        #md_bg_color: "#FFF123"
+        #line_color: "blue"
+
+        MDBoxLayout:
+            id:div1_1
+            orientation: 'vertical'
+            size_hint:1,None
+            adaptive_height:True
+            #md_bg_color: "#FFF123"
+            #line_color: "blue"
+            padding:0,100,50,0
+
+            MDBoxLayout:
+                id:div1_1_1
+                orientation: 'horizontal'
+                size_hint:1,None
+                adaptive_height:True  
+                #md_bg_color: "#FFF123"
+                #line_color: "red"
+                line_width:1
+                padding:50,0,0,0
+                
+                MDRectangleFlatIconButton:
+                    text: "Add Bulk Users"
+                    line_color:"#3333CC"
+                    text_color:0,0,0,1
+                    icon:"account-group"
+
+                MDRectangleFlatIconButton:
+                    text: "Add Single User"
+                    line_color:0,0,0,0
+                    text_color:0,0,0,1
+                    icon:"account"
+
+
+
+            MDBoxLayout:
+                line_color:"gray"
+                size_hint:1,None
+                height:1
+                padding:0,0,30,0
         
-        CenterBar:
+        MDBoxLayout:
+            id:div1_2
+            orientation: 'vertical'
+            size_hint:1,1
+            #md_bg_color: "#FFF123"

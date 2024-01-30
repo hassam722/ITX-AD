@@ -45,20 +45,16 @@
         size_hint:None,None
         adaptive_size:True
 
-        
 
-<CenterBar>:
-    orientation: 'vertical'
-    TitleBar:
+<SearchBar>:
+    size_hint_y:None
+    adaptive_height:True
 
-    MDScreenManager:
-        id:sm
-
-        HomeScreen:
-            name:"export_adusers"
-
-        UsersScreen:
-            name:"adusers"
+    MDTextField:
+        id: search_txt
+        hint_text: root.hint_text
+        text: root.text
+        icon_right: "magnify"
 
 
     
@@ -104,7 +100,7 @@
                 theme_text_color: "Custom"
                 text_color: "black"
                 theme_icon_color: "Custom"
-                icon_color: "orange"
+                icon_color: "black"
                 line_color: 0, 0, 0, 0
                 on_release: app.Export_ADUsers_clicked()
             
@@ -114,12 +110,66 @@
                 theme_text_color: "Custom"
                 text_color: "black"
                 theme_icon_color: "Custom"
-                icon_color: "orange"
+                icon_color: "black"
                 line_color: 0, 0, 0, 0
                 on_release: app.ADUsers_clicked()
 
 
+
+<ListItemWithCheckbox>:
+    divider:None
+    size_hint:1,None
+    adaptive_height:True
+    LeftCheckBox:
+
+
+<FilterItem>:   
+    orientation:"vertical"
+    size_hint:1,None
+    height:dp(500)
+    
+    SearchBar:
+        id:ou_search_bar
+        hint_text:root.hint_text
+
+    ScrollView:
+        size_hint:1,1
+        do_scroll_y: True
+        MDList:
+            id:list_container
+            spacing: dp(-5)
+            
+
+
+            
+
+
+<CenterBar>:
+    orientation: 'vertical'
+    TitleBar:
+
+    MDScreenManager:
+        id:sm
+
+        HomeScreen:
+            name:"export_adusers"
+
+        UsersScreen:
+            name:"adusers"
+
+
+
+
+
+
+
+
+
+
 <HomeScreen>:
+    #MDDialog:
+    #    id:filter
+
     MDBoxLayout:
         id:div1
         orientation: 'vertical'
@@ -175,13 +225,14 @@
                     elevation:1
                     shadow_radius:10
                     shadow_offset: (-1, 2)
+                    on_release:root.OU_click()
             
                 SpecificButton:
                     text:"Group"
                     text_color: 0, 0, 0, 1
                     line_color:0,0,0,0
                     md_bg_color: "#FFFFFF"
-
+                    on_release:root.group_click()
 
                 SpecificButton:
                     text:"User"
@@ -236,12 +287,14 @@
                     line_color:"#3333CC"
                     text_color:0,0,0,1
                     icon:"account-group"
+                    icon_color: "black"
 
                 MDRectangleFlatIconButton:
                     text: "Add Single User"
                     line_color:0,0,0,0
                     text_color:0,0,0,1
                     icon:"account"
+                    icon_color: "black"
 
 
 
@@ -256,3 +309,7 @@
             orientation: 'vertical'
             size_hint:1,1
             #md_bg_color: "#FFF123"
+
+
+
+    

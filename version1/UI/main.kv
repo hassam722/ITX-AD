@@ -45,16 +45,24 @@
         size_hint:None,None
         adaptive_size:True
 
+<CheckedItem>:
+    orientation:"vertical"
+    size_hint:None,None
+    adaptive_size:True
 
-<SearchBar>:
-    size_hint_y:None
-    adaptive_height:True
+    MDLabel:
+        text:"Name:" + root.name
+        size_hint:None,None
+        adaptive_size:True
+        font_style:'Caption'
 
-    MDTextField:
-        id: search_txt
-        hint_text: root.hint_text
-        text: root.text
-        icon_right: "magnify"
+    MDLabel:
+        text:"DN:" + root.dn
+        size_hint:None,None
+        adaptive_size:True
+        font_style:'Overline'
+
+
 
 
     
@@ -121,6 +129,7 @@
     size_hint:1,None
     adaptive_height:True
     LeftCheckBox:
+        on_active:self.on_check()
 
 
 <FilterItem>:   
@@ -128,9 +137,12 @@
     size_hint:1,None
     height:dp(500)
     
-    SearchBar:
-        id:ou_search_bar
-        hint_text:root.hint_text
+    MDTextField:
+        id: search_bar
+        hint_text: root.hint_text
+        text: root.text
+        icon_right: "magnify"
+        on_text: root.on_text_changed()
 
     ScrollView:
         size_hint:1,1
@@ -215,7 +227,7 @@
                 #md_bg_color: "#FFF123"
                 #line_color: "green"
                 spacing:"10dp"
-                padding:50,20,0,0
+                padding:50,20,10,0
 
                 SpecificButton:
                     text:"OU"
@@ -250,12 +262,42 @@
 
         MDBoxLayout:
             id:div1_2
-            orientation: 'vertical'
+            orientation: 'horizontal'
             size_hint:1,1
             #md_bg_color: "#FFF123"
+            padding:20,10,0,0
 
+            MDBoxLayout:
+                id:div1_2_1
+                orientation:'vertical'
+                size_hint:0.8,1
+                #md_bg_color:"#FFFFFF"
 
-<UsersScreen>:
+            ScrollView:
+                size_hint:0.2,1
+                MDBoxLayout:
+                    orientation:'vertical'
+                    size_hint:None,None
+                    adaptive_size:True
+                    #md_bg_color:"#FFFFFF"
+
+                    MDBoxLayout:
+                        id:ou_checked_item_box
+                        orientation:'vertical'
+                        size_hint:None,None
+                        adaptive_size:True
+                        spacing:5
+            
+                    
+                    MDBoxLayout:
+                        id:group_checked_item_box
+                        orientation:'vertical'
+                        size_hint:None,None
+                        adaptive_size:True
+                        spacing:5
+
+                       
+<UsersScreen>:  
     MDBoxLayout:
         id:div1
         orientation: 'vertical'

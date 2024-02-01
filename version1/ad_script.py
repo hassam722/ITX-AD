@@ -1,4 +1,4 @@
-import subprocess,object,json
+import subprocess,json
 users = []
 groups = []
 computers = []
@@ -82,7 +82,7 @@ def execute(query):
 
 
 # temp_dict = {"City":"Karachi","Country":"PK"}
-print(execute(get_query_gp_in_ou("OU=HR,DC=DC,DC=ITX")))
+# print(execute(get_query_gp_in_ou("OU=HR,DC=DC,DC=ITX")))
 
 
 
@@ -135,19 +135,19 @@ def show_all_properties(data):
 
 
 
-# while True:
-#     firstoptions()
-#     flag =int(input("enter your option:"))
+while True:
+    firstoptions()
+    flag =int(input("enter your option:"))
 
-#     if flag ==0:
-#         data = execute(all_users_query)
-#         show_objects(data)
-#     elif flag ==1:
-#         data =execute(all_group_query)
-#         show_objects(data)
-#     elif flag ==2:
-#         data =execute(all_ou_query)
-#         get_ou_users(data)
-#     elif flag == 3:
-#         data =execute(all_computer_query)
-#         show_objects(data)
+    if flag ==0:
+        data = execute(all_users_query)
+        show_objects(data)
+    elif flag ==1:
+        data =execute(all_group_query)
+        show_objects(data)
+    elif flag ==2:
+        data =execute(all_ou_query)
+        show_objects(data)
+    elif flag == 3:
+        data =execute(all_computer_query)
+        show_objects(data)

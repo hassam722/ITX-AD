@@ -45,6 +45,9 @@
         size_hint:None,None
         adaptive_size:True
 
+
+
+
 <CheckedItem>:
     orientation:"vertical"
     size_hint:None,None
@@ -64,6 +67,20 @@
 
 
 
+<AttributeField>:
+    orientation:'horizontal'
+    size_hint:(1,None)
+    adaptive_height:True
+
+    MDIconButton:
+        icon: "close-circle-outline"
+        size_hint:None,None
+        adaptive_size:True
+        on_release:root.remove_me()
+
+    MDTextField:
+        size_hint:1,None
+        adaptive_height:True
 
     
 
@@ -151,6 +168,26 @@
             id:list_container
             spacing: dp(-5)
             
+<AttributeFilterBox>:
+    orientation:'vertical'
+    size_hint:1,None
+    height:dp(500)
+
+    
+    MDRectangleFlatIconButton:
+        text:"Add"
+        icon:'plus'
+        size_hint:None,None
+        adaptive_size:True
+        on_release:root.add_attribute()
+
+    ScrollView:
+        size_hint:1,1
+        do_scroll_y: True
+        MDList:
+            id:attribute_container
+            spacing: dp(-5)
+    
 
 
             
@@ -251,6 +288,7 @@
                     text_color: 0, 0, 0, 1
                     line_color:0,0,0,0
                     md_bg_color: "#FFFFFF"
+                    on_release:root.users_click()
 
                 SpecificButton:
                     text:"Submit"
@@ -280,6 +318,7 @@
                     size_hint:None,None
                     adaptive_size:True
                     #md_bg_color:"#FFFFFF"
+                    spacing:5
 
                     MDBoxLayout:
                         id:ou_checked_item_box
@@ -291,6 +330,13 @@
                     
                     MDBoxLayout:
                         id:group_checked_item_box
+                        orientation:'vertical'
+                        size_hint:None,None
+                        adaptive_size:True
+                        spacing:5
+
+                    MDBoxLayout:
+                        id:attribute_box
                         orientation:'vertical'
                         size_hint:None,None
                         adaptive_size:True

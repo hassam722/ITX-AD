@@ -61,29 +61,32 @@ class LeftCheckBox(ILeftBodyTouch,MDCheckbox):
         else:
             self.parent.parent.parent.parent.parent.remove_checked_item(dn_)
 
+class AttributeField(MDBoxLayout):
+    def remove_me(self):
+        self.parent.remove_widget(self)
+    def get_attribute(self):
+        return self.children[0].text
 
-
-
+    
 
 class FilterDialog(MDDialog):
     def open(self):
-        self.content_cls.remove_items()
-        self.content_cls.add_items()
         super().open()        
-
-    def ok_click(self):
-        print("okay clicked")
 
     def get_checked_item(self):
         return self.content_cls.checked_data
-
     
+    def get_attribute_list(self):
+        return self.content_cls.get_attribute_list()
+
+
 
 class FilterItem(MDBoxLayout):
     text = StringProperty()
     hint_text = StringProperty()
     checked_data=None # this list contains checked data only
     data = None
+    object_list = None
 
     def add_checked_item(self,name_,dn_):
         temp_dict = {}
@@ -97,24 +100,30 @@ class FilterItem(MDBoxLayout):
                 self.checked_data.remove(item)
                 # print(self.checked_data)
                 return
+            
+    def create_object_list(self):# to call the object list first assign the 'self.data',it contains data on which objects to be create.
+        if not self.data:
+            raise("first assing the 'self.data' as list object")
+        temp_list = list()
+        for item in self.data:
+            temp=ListItemWithCheckbox(text=item.get("name"),secondary_text=item.get("dn"))
+            temp_list.append(temp)
+        self.object_list = temp_list
                 
     def remove_items(self):
         self.ids.list_container.clear_widgets()
 
     def add_items(self,_list=None):
-        temp_list =self.data
-
+        temp_list =self.object_list
         if _list:
             temp_list = _list
-
         for item in temp_list:
-            temp=ListItemWithCheckbox(text=item.get("name"),secondary_text=item.get("dn"))
-            self.ids.list_container.add_widget(temp)
+            self.ids.list_container.add_widget(item)
     
     def search_item(self,search_word:str=None):
         temp_list =[]
         if search_word:
-            temp_list.append(item for item in self.data if item.get("name").upper().startswith(search_word.upper()))
+            temp_list.append(item for item in self.object_list if item.text.upper().startswith(search_word.upper()))
             return temp_list[0] ## it gives the generator object
         return temp_list
     
@@ -125,12 +134,27 @@ class FilterItem(MDBoxLayout):
         self.add_items(gen_obj)
 
 
+class AttributeFilterBox(MDBoxLayout):
+    def add_attribute(self):
+        attr_ = AttributeField()
+        self.ids.attribute_container.add_widget(attr_)
+
+    def get_attribute_list(self):
+        temp_list = list()
+        for obj in self.ids.attribute_container.children:
+            if obj.get_attribute()!="":
+                temp_list.append(obj.get_attribute())
+        return temp_list
+
+    
+    
 
 class HomeScreen(MDScreen):
     # item = ListItemWithCheckbox()
     ou_dialog=None
     group_dialog=None
     users_dialog = None
+    prev_ou_state=None
 
     def OU_click(self):
         temp_list = [{"name":"HR","dn":"CN=HR,DC=ITX,DC=com"},{"name":"Admin","dn":"CN=Admin,DC=ITX,DC=com"},{"name":"Finance","dn":"CN=Finance,DC=ITX,DC=com"},
@@ -154,13 +178,39 @@ class HomeScreen(MDScreen):
                                             ],
                                         )
             self.ou_dialog.content_cls.data=temp_list
-            self.ou_dialog.content_cls.checked_data=list()  
+            self.ou_dialog.content_cls.create_object_list()
+            self.ou_dialog.content_cls.add_items()
+            self.ou_dialog.content_cls.checked_data=list()
         self.ou_dialog.open()
 
     def group_click(self):
         temp_list = [{"name":"G1","dn":"CN=G1,DC=ITX,DC=com"},{"name":"G2","dn":"CN=G2,DC=ITX,DC=com"},{"name":"G3","dn":"CN=G3,DC=ITX,DC=com"}]
-        filter_item = FilterItem(hint_text = "Search group")
+        
+        if self.ou_dialog:# this checks ou_dialog created or not.
+            
+            if self.prev_ou_state==self.ou_dialog.get_checked_item():
+                print(self.prev_ou_state,self.ou_dialog.get_checked_item())
+                print("prev state same")
+                self.create_group_dialog()
+            else:
+                t_list =[{"name":"s1","dn":"CN=s1,DC=ITX,DC=com"},{"name":"s1","dn":"CN=s1,DC=ITX,DC=com"}]
+                if len(self.ou_dialog.get_checked_item())==0:#this condition creates all group objects of AD in filter
+                    t_list = temp_list
+                print("prev state change")
+                '''{
+                    get data from ou_dialog.checked_data and create t_list as required.
+                }'''
+                
+                self.group_dialog=None
+                self.create_group_dialog(t_list)
+                self.prev_ou_state = list(self.ou_dialog.get_checked_item())
+        else:# if ou_dialog not created it creates group dialog with all objects.
+            self.create_group_dialog(temp_list)
+            
+        
+    def create_group_dialog(self,list_:list=None):
         if not self.group_dialog:
+            filter_item = FilterItem(hint_text = "Search group")
             self.group_dialog = FilterDialog(
                 size_hint=(0.5,None),
                 content_cls=filter_item,
@@ -175,25 +225,43 @@ class HomeScreen(MDScreen):
                         ),
                     ],
                 )
-            self.group_dialog.content_cls.data=temp_list 
+            self.group_dialog.content_cls.data=list_ 
+            self.group_dialog.content_cls.create_object_list()
+            self.group_dialog.content_cls.add_items()
             self.group_dialog.content_cls.checked_data=list() 
         self.group_dialog.open()
-        
 
     def users_click(self):
-        pass
+        if not self.users_dialog:
+            attr_filter_box = AttributeFilterBox()
+            self.users_dialog = FilterDialog(
+                size_hint=(0.3,None),
+                content_cls=attr_filter_box,
+                type="custom",
+                title="Attribute Filter",
+                buttons=[
+                        MDFlatButton(
+                            text="OK",
+                            theme_text_color="Custom",
+                            text_color=rgba("#3333CC"),
+                            on_release=lambda x: self.ok_click(3)
+                        ),
+                    ],
+                ) 
+        self.users_dialog.open()
 
     def ok_click(self,flag):
         if flag==1:### ok click of ou dialog
             self.add_checked_OU()
-            print(self.ou_dialog.content_cls.checked_data)
+            # print(self.ou_dialog.content_cls.checked_data)
             self.ou_dialog.dismiss()
         elif flag==2: ### ok click of group dialog
             self.add_checked_group()
-            print(self.group_dialog.content_cls.checked_data)
+            # print(self.group_dialog.content_cls.checked_data)
             self.group_dialog.dismiss()
         elif flag==3:### ok click of user dialog
-            self.users_dialog.ok_click()
+            self.add_attribute()
+            self.users_dialog.dismiss()
 
     def add_checked_OU(self):
         self.ids.ou_checked_item_box.clear_widgets()
@@ -225,25 +293,22 @@ class HomeScreen(MDScreen):
         for item in list_:
             self.ids.group_checked_item_box.add_widget(CheckedItem(name=item.get(_name),dn=item.get(_dn)))
 
-   
-        
-        
-    
-            
-                
+    def add_attribute(self):
+        self.ids.attribute_box.clear_widgets()
+        list_=self.users_dialog.get_attribute_list()
 
-
-    def add_heading(self,heading):
-        self.ids.scroll_checked_item.add_widget(
-            MDLabel(
-                text=heading,
-                size_hint=(None,None),
-                adaptive_size=True,
-                font_style ="H6",
-                bold = True
+        if list_:
+            self.ids.attribute_box.add_widget(
+                MDLabel(
+                        text="Attributes",
+                        size_hint=(None,None),
+                        adaptive_size=True,
+                        font_style ="H6",
+                        bold = True)
             )
-        )
-        
+        for item in list_:
+            self.ids.attribute_box.add_widget(MDLabel(text=item,font_style='Caption',
+                                                            size_hint=(None,None),adaptive_size=True))
         
 
 class UsersScreen(MDScreen):

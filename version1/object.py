@@ -1,0 +1,3 @@
+OU_LIST = [{"name":"HR","dn":"CN=HR,DC=ITX,DC=com"},{"name":"Admin","dn":"CN=Admin,DC=ITX,DC=com"},{"name":"Finance","dn":"CN=Finance,DC=ITX,DC=com"},
+                         {"name":"Security","dn":"CN=Security,DC=ITX,DC=com"},{"name":"IT","dn":"CN=IT,DC=ITX,DC=com"},{"name":"Management","dn":"CN=Management,DC=ITX,DC=com"},
+                         {"name":"Staff","dn":"CN=Staff,DC=ITX,DC=com"},{"name":"Technical","dn":"CN=Technical,DC=ITX,DC=com"}]

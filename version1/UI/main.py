@@ -1,7 +1,7 @@
+import object
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.behaviors import CommonElevationBehavior
-from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.button import MDRoundFlatButton,MDFlatButton
 from kivy.utils import rgba
 from kivymd.uix.screen import MDScreen
@@ -15,7 +15,7 @@ from kivy.properties import StringProperty
 
 
 from kivy.lang import Builder
-Builder.load_file('main.kv')
+Builder.load_file('UI/main.kv')
 
 # constants
 _name = "name"
@@ -36,7 +36,7 @@ class BaseShadowWidget(CommonElevationBehavior):
 class FilterWidget(MDBoxLayout):
     pass
 
-class TitleBar(BaseShadowWidget,MDBoxLayout):
+class TitleBar(CommonElevationBehavior,MDBoxLayout):
     pass
 
 class SpecificButton(CommonElevationBehavior,MDRoundFlatButton):
@@ -52,6 +52,7 @@ class ListItemWithCheckbox(TwoLineIconListItem):
     pass
 
 class LeftCheckBox(ILeftBodyTouch,MDCheckbox):
+
     def on_check(self):
         flag =self.active
         name_=self.parent.parent.text
@@ -62,14 +63,30 @@ class LeftCheckBox(ILeftBodyTouch,MDCheckbox):
             self.parent.parent.parent.parent.parent.remove_checked_item(dn_)
 
 class AttributeField(MDBoxLayout):
+
     def remove_me(self):
         self.parent.remove_widget(self)
     def get_attribute(self):
         return self.children[0].text
+    
+class SwitchBox(MDBoxLayout):
 
+    text = StringProperty()
+    pass
+
+class ConditionValueItem(MDBoxLayout):
+
+    condition = StringProperty()
+    def remove_me(self):
+        self.parent.remove_widget(self)
+    def get_value(self):
+        return self.children[0].text
+        
+    
     
 
 class FilterDialog(MDDialog):
+
     def open(self):
         super().open()        
 
@@ -82,6 +99,7 @@ class FilterDialog(MDDialog):
 
 
 class FilterItem(MDBoxLayout):
+
     text = StringProperty()
     hint_text = StringProperty()
     checked_data=None # this list contains checked data only
@@ -102,8 +120,8 @@ class FilterItem(MDBoxLayout):
                 return
             
     def create_object_list(self):# to call the object list first assign the 'self.data',it contains data on which objects to be create.
-        if not self.data:
-            raise("first assing the 'self.data' as list object")
+        # if not self.data:
+        #     raise("first assing the 'self.data' as list object")
         temp_list = list()
         for item in self.data:
             temp=ListItemWithCheckbox(text=item.get("name"),secondary_text=item.get("dn"))
@@ -134,7 +152,29 @@ class FilterItem(MDBoxLayout):
         self.add_items(gen_obj)
 
 
+class ConditionFilterBox(MDBoxLayout):
+
+    def add_click(self):
+        attribute = self.ids.condition_bar.text
+        if attribute:
+            #create codition value item with attribute value and insert into condition container
+            self.ids.condition_bar.text=""
+            temp_condition_value_item = ConditionValueItem(condition=attribute)
+            self.ids.condition_container.add_widget(temp_condition_value_item)
+    
+    def get_condition_items(self):
+        '''this function return dict object of condition : value'''
+
+        temp_dict = {}
+        for item in self.ids.condition_container.children:
+            temp_dict[item.condition] = item.get_value()
+
+        return temp_dict
+        
+            
+
 class AttributeFilterBox(MDBoxLayout):
+    
     def add_attribute(self):
         attr_ = AttributeField()
         self.ids.attribute_container.add_widget(attr_)
@@ -151,8 +191,9 @@ class AttributeFilterBox(MDBoxLayout):
 
 class HomeScreen(MDScreen):
     # item = ListItemWithCheckbox()
+    
     ou_dialog=None
-    group_dialog=None
+    condition_dialog=None
     users_dialog = None
     prev_ou_state=None
 
@@ -177,59 +218,34 @@ class HomeScreen(MDScreen):
                                                 ),
                                             ],
                                         )
-            self.ou_dialog.content_cls.data=temp_list
+            self.ou_dialog.content_cls.data=object.OU_LIST
             self.ou_dialog.content_cls.create_object_list()
             self.ou_dialog.content_cls.add_items()
             self.ou_dialog.content_cls.checked_data=list()
         self.ou_dialog.open()
 
-    def group_click(self):
-        temp_list = [{"name":"G1","dn":"CN=G1,DC=ITX,DC=com"},{"name":"G2","dn":"CN=G2,DC=ITX,DC=com"},{"name":"G3","dn":"CN=G3,DC=ITX,DC=com"}]
-        
-        if self.ou_dialog:# this checks ou_dialog created or not.
-            
-            if self.prev_ou_state==self.ou_dialog.get_checked_item():
-                print(self.prev_ou_state,self.ou_dialog.get_checked_item())
-                print("prev state same")
-                self.create_group_dialog()
-            else:
-                t_list =[{"name":"s1","dn":"CN=s1,DC=ITX,DC=com"},{"name":"s1","dn":"CN=s1,DC=ITX,DC=com"}]
-                if len(self.ou_dialog.get_checked_item())==0:#this condition creates all group objects of AD in filter
-                    t_list = temp_list
-                print("prev state change")
-                '''{
-                    get data from ou_dialog.checked_data and create t_list as required.
-                }'''
-                
-                self.group_dialog=None
-                self.create_group_dialog(t_list)
-                self.prev_ou_state = list(self.ou_dialog.get_checked_item())
-        else:# if ou_dialog not created it creates group dialog with all objects.
-            self.create_group_dialog(temp_list)
-            
-        
-    def create_group_dialog(self,list_:list=None):
-        if not self.group_dialog:
-            filter_item = FilterItem(hint_text = "Search group")
-            self.group_dialog = FilterDialog(
-                size_hint=(0.5,None),
-                content_cls=filter_item,
-                type="custom",
-                title="Filter Group",
-                buttons=[
-                        MDFlatButton(
-                            text="OK",
-                            theme_text_color="Custom",
-                            text_color=rgba("#3333CC"),
-                            on_release=lambda x: self.ok_click(2)
-                        ),
-                    ],
-                )
-            self.group_dialog.content_cls.data=list_ 
-            self.group_dialog.content_cls.create_object_list()
-            self.group_dialog.content_cls.add_items()
-            self.group_dialog.content_cls.checked_data=list() 
-        self.group_dialog.open()
+
+    def condition_click(self):
+
+        if not self.condition_dialog:
+            condition_filter_box = ConditionFilterBox()
+            self.condition_dialog = FilterDialog(
+                                                title = "Add Conditions",
+                                                size_hint=(0.5,None),
+                                                content_cls=condition_filter_box,
+                                                type="custom",
+                                                buttons=[
+                                                        MDFlatButton(
+                                                            text="OK",
+                                                            theme_text_color="Custom",
+                                                            text_color=rgba("#3333CC"),
+                                                            on_release=lambda x: self.ok_click(2)
+                                                        ),
+                                                    ],
+                                            )
+        self.condition_dialog.open()
+    
+
 
     def users_click(self):
         if not self.users_dialog:
@@ -256,9 +272,9 @@ class HomeScreen(MDScreen):
             # print(self.ou_dialog.content_cls.checked_data)
             self.ou_dialog.dismiss()
         elif flag==2: ### ok click of group dialog
-            self.add_checked_group()
+            self.add_conditions()
             # print(self.group_dialog.content_cls.checked_data)
-            self.group_dialog.dismiss()
+            self.condition_dialog.dismiss()
         elif flag==3:### ok click of user dialog
             self.add_attribute()
             self.users_dialog.dismiss()
@@ -278,6 +294,27 @@ class HomeScreen(MDScreen):
         for item in list_:
             self.ids.ou_checked_item_box.add_widget(CheckedItem(name=item.get(_name),dn=item.get(_dn)))
 
+
+    def add_conditions(self):
+        self.ids.condition_item_box.clear_widgets()
+        dict_ = self.condition_dialog.content_cls.get_condition_items()
+        if dict_:
+            self.ids.condition_item_box.add_widget(
+                MDLabel(
+                        text="Condition",
+                        size_hint=(None,None),
+                        adaptive_size=True,
+                        font_style ="H6",
+                        bold = True)
+            )
+
+        for key,value in dict_.items():
+            self.ids.condition_item_box.add_widget(MDLabel( text=key + " : " + value,
+                                                            size_hint=(None,None),
+                                                            adaptive_size=True,
+                                                            font_style ="Caption"
+                                                            ))
+
     def add_checked_group(self):
         self.ids.group_checked_item_box.clear_widgets()
         list_=self.group_dialog.get_checked_item()
@@ -293,6 +330,7 @@ class HomeScreen(MDScreen):
         for item in list_:
             self.ids.group_checked_item_box.add_widget(CheckedItem(name=item.get(_name),dn=item.get(_dn)))
 
+    
     def add_attribute(self):
         self.ids.attribute_box.clear_widgets()
         list_=self.users_dialog.get_attribute_list()
@@ -320,7 +358,7 @@ class ITX_AD(MDApp):
     
     def build(self):
         super().build()
-        Window.set_icon('images/icon.png')
+        Window.set_icon('UI/images/icon.png')
         Window.maximize()
         self.box = MDBoxLayout(md_bg_color=rgba("#3333CC"))
         self.box.padding = "20dp","10dp","20dp","0dp"
@@ -345,9 +383,12 @@ class ITX_AD(MDApp):
         self.centerbar.ids.sm.current = _adusers
 
 
-if __name__ =="__main__":
-    app = ITX_AD()
-    app.run()
+print(__name__)
+app = ITX_AD()
+app.run()
+# if __name__ =="__main__":
+#     app = ITX_AD()
+#     app.run()
     
 
 
@@ -361,3 +402,57 @@ if __name__ =="__main__":
 # ListItemWithCheckbox:
 #     text: "[size=14]Two-line item[/size]"
 #     secondary_text: "[size=14]Secondary text here[/size]"
+    
+
+
+
+
+
+
+    # def group_click(self):
+    #     temp_list = [{"name":"G1","dn":"CN=G1,DC=ITX,DC=com"},{"name":"G2","dn":"CN=G2,DC=ITX,DC=com"},{"name":"G3","dn":"CN=G3,DC=ITX,DC=com"}]
+        
+    #     if self.ou_dialog:# this checks ou_dialog created or not.
+            
+    #         if self.prev_ou_state==self.ou_dialog.get_checked_item():
+    #             print(self.prev_ou_state,self.ou_dialog.get_checked_item())
+    #             print("prev state same")
+    #             self.create_group_dialog()
+    #         else:
+    #             t_list =[{"name":"s1","dn":"CN=s1,DC=ITX,DC=com"},{"name":"s1","dn":"CN=s1,DC=ITX,DC=com"}]
+    #             if len(self.ou_dialog.get_checked_item())==0:#this condition creates all group objects of AD in filter
+    #                 t_list = temp_list
+    #             print("prev state change")
+    #             '''{
+    #                 get data from ou_dialog.checked_data and create t_list as required.
+    #             }'''
+                
+    #             self.group_dialog=None
+    #             self.create_group_dialog(t_list)
+    #             self.prev_ou_state = list(self.ou_dialog.get_checked_item())
+    #     else:# if ou_dialog not created it creates group dialog with all objects.
+    #         self.create_group_dialog(temp_list)
+            
+        
+    # def create_group_dialog(self,list_:list=None):
+    #     if not self.group_dialog:
+    #         filter_item = FilterItem(hint_text = "Search group")
+    #         self.group_dialog = FilterDialog(
+    #             size_hint=(0.5,None),
+    #             content_cls=filter_item,
+    #             type="custom",
+    #             title="Filter Group",
+    #             buttons=[
+    #                     MDFlatButton(
+    #                         text="OK",
+    #                         theme_text_color="Custom",
+    #                         text_color=rgba("#3333CC"),
+    #                         on_release=lambda x: self.ok_click(2)
+    #                     ),
+    #                 ],
+    #             )
+    #         self.group_dialog.content_cls.data=list_ 
+    #         self.group_dialog.content_cls.create_object_list()
+    #         self.group_dialog.content_cls.add_items()
+    #         self.group_dialog.content_cls.checked_data=list() 
+    #     self.group_dialog.open()

@@ -72,6 +72,10 @@ def get_query_gp_in_ou(ou_dn):
 def execute(query):
     result = subprocess.run(["powershell.exe", "-Command", query], capture_output=True, text=True)
     # print(result.stdout)
+    if not result.stdout:
+        temp_list = list()
+        # temp_list.append({"name":"Demo","dn":"CN=Demo,DC=ITX,DC=com"})
+        return temp_list
     data = json.loads(result.stdout)
     if type(data) != type(list()):
         temp_list= list()
@@ -135,19 +139,19 @@ def show_all_properties(data):
 
 
 
-while True:
-    firstoptions()
-    flag =int(input("enter your option:"))
+# while True:
+#     firstoptions()
+#     flag =int(input("enter your option:"))
 
-    if flag ==0:
-        data = execute(all_users_query)
-        show_objects(data)
-    elif flag ==1:
-        data =execute(all_group_query)
-        show_objects(data)
-    elif flag ==2:
-        data =execute(all_ou_query)
-        show_objects(data)
-    elif flag == 3:
-        data =execute(all_computer_query)
-        show_objects(data)
+#     if flag ==0:
+#         data = execute(all_users_query)
+#         show_objects(data)
+#     elif flag ==1:
+#         data =execute(all_group_query)
+#         show_objects(data)
+#     elif flag ==2:
+#         data =execute(all_ou_query)
+#         show_objects(data)
+#     elif flag == 3:
+#         data =execute(all_computer_query)
+#         show_objects(data)

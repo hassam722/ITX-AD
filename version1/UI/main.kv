@@ -1,7 +1,8 @@
 <SpecificButton>:
     elevation:1
     shadow_radius:10
-    shadow_offset: (-1, 2)
+    shadow_offset: 0, -3
+    shadow_softness: 4
 
 <TitleBar>:
     orientation: 'vertical'
@@ -10,8 +11,9 @@
     md_bg_color: "#FFFFFF"
     pos_hint:{'top':1}
     padding:"0dp","10dp","0dp","10dp"
-    elevation: 2
-    shadow_offset: (-4, 2)
+    elevation: 1
+    shadow_offset: 6, -6
+    shadow_softness: 4
     
 
     MDLabel:
@@ -82,7 +84,50 @@
         size_hint:1,None
         adaptive_height:True
 
-    
+<SwitchBox>:
+    orientation:'horizontal'
+    size_hint:None,None
+    adaptive_size:True
+    spacing:5
+
+    MDLabel:
+        text:root.text
+        size_hint:None,None
+        adaptive_size:True
+        font_style:'H4'
+
+    MDSwitch:
+        size_hint:None,None
+        icon_active: "check"
+        icon_inactive: "close"
+        icon_inactive_color: "grey"
+        icon_active_color: "white"
+        pos_hint:{'center_y':0.2}
+        
+
+<ConditionValueItem>:
+    orientation:'horizontal'
+    size_hint:1,None
+    adaptive_height:True
+    spacing:10
+    padding:5,0,5,0
+
+    MDChip:
+        type: "input"
+        line_color: "grey"
+        _no_ripple_effect: True
+
+        MDChipText:
+            text: root.condition
+
+        MDChipTrailingIcon:
+            icon: "close"
+            on_release:root.remove_me()
+
+    MDTextField:
+        hint_text:root.condition
+        pos_hint:{"center_y":0.25}
+
 
 <SideBar>:
     orientation: 'horizontal'
@@ -91,7 +136,7 @@
     pos_hint:{'left':1}
     md_bg_color: "#FFFFFF"
     #line_color: "red"
-    elevation: 2
+    elevation: 1
 
 
     MDBoxLayout:
@@ -106,7 +151,7 @@
         padding:"0dp","40dp","0dp","0dp"
 
         Image:
-            source: 'images/logo.png'
+            source: 'UI/images/logo.png'
             size_hint:None,None
             width :"120dp"
             height: "120dp"
@@ -167,6 +212,63 @@
         MDList:
             id:list_container
             spacing: dp(-5)
+
+<ConditionFilterBox>:
+    orientation:'vertical'
+    size_hint:1,None
+    height:dp(500)
+
+    #1
+    MDBoxLayout:
+        orientation:'horizontal'
+        size_hint:1,None
+        adaptive_height:True
+        spacing: 10
+
+        MDRectangleFlatIconButton:
+            text:'Add'
+            icon:'plus'
+            size_hint:None,None
+            adaptive_size:True
+            on_release:root.add_click()
+
+        MDTextField:
+            id:condition_bar
+            hint_text:'Enter Condition'
+            size_hint:1,None
+            pos_hint:{'center_y':0.25}            
+
+    #2
+    MDBoxLayout:
+        orientation:'horizontal'
+        size_hint:1,None
+        adaptive_height:True
+        spacing:30
+
+        SwitchBox:
+            text:'And'
+
+        SwitchBox:
+            text:'Like'
+
+    #3
+    MDScrollView:
+        size_hint:1,1
+        #adaptive_height:True
+        line_color:'grey'
+        line_width:1
+        
+
+        MDList:
+            id:condition_container
+
+            #ConditionValueItem:
+            #    condition:"SamAccountName"
+
+            #ConditionValueItem:
+            #    condition:"Country"
+
+
             
 <AttributeFilterBox>:
     orientation:'vertical'
@@ -271,20 +373,17 @@
                     text_color: 0, 0, 0, 1
                     line_color:0,0,0,0
                     md_bg_color: "#FFFFFF"
-                    elevation:1
-                    shadow_radius:10
-                    shadow_offset: (-1, 2)
                     on_release:root.OU_click()
             
                 SpecificButton:
-                    text:"Group"
+                    text:"Condition"
                     text_color: 0, 0, 0, 1
                     line_color:0,0,0,0
                     md_bg_color: "#FFFFFF"
-                    on_release:root.group_click()
+                    on_release:root.condition_click()
 
                 SpecificButton:
-                    text:"User"
+                    text:"Attributes"
                     text_color: 0, 0, 0, 1
                     line_color:0,0,0,0
                     md_bg_color: "#FFFFFF"
@@ -329,7 +428,7 @@
             
                     
                     MDBoxLayout:
-                        id:group_checked_item_box
+                        id:condition_item_box
                         orientation:'vertical'
                         size_hint:None,None
                         adaptive_size:True

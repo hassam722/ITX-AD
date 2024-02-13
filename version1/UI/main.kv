@@ -1,3 +1,39 @@
+<FileExportWidget>:
+    orientation:'vertical'
+    size_hint:None,None
+    adaptive_size:True
+    pos_hint:{'center_x':0.5,'center_y':0.5}
+    #line_color:'blue'
+    spacing:10
+
+    MDBoxLayout:
+        orientation:'horizontal'
+        size_hint:None,None
+        adaptive_size:True
+
+        MDTextField:
+            id:filename_field
+            size_hint:None,None
+            height:dp(60)
+            width:dp(300)
+            mode:'rectangle'
+            line_color:0,0,0,0
+            line_anim:False
+
+        MDLabel:
+            text:".CSV"
+            size_hint:None,None
+            font_style:'H5'
+            adaptive_size:True
+
+    MDRaisedButton:
+        text: "Export"
+        md_bg_color: "green"
+        size_hint:1,None
+        adaptive_height:True
+        on_release:root.export_click()
+
+
 <SpecificButton>:
     elevation:1
     shadow_radius:10
@@ -24,6 +60,7 @@
         adaptive_size:True
         pos_hint:{'center_x':0.5}
         bold: True
+
 
 
 
@@ -246,9 +283,11 @@
         spacing:30
 
         SwitchBox:
+            id:and_switch
             text:'And'
 
         SwitchBox:
+            id:like_switch
             text:'Like'
 
     #3
@@ -394,6 +433,7 @@
                     text_color: 1, 1, 1, 1
                     md_bg_color:"#3333CC"
                     line_color:0,0,0,0
+                    on_release:root.submit_click()
 
 
 
@@ -404,12 +444,16 @@
             #md_bg_color: "#FFF123"
             padding:20,10,0,0
 
-            MDBoxLayout:
+            MDFloatLayout:
                 id:div1_2_1
-                orientation:'vertical'
+                #orientation:'vertical'
                 size_hint:0.8,1
                 #md_bg_color:"#FFFFFF"
+                line_color:'black'
 
+
+
+            # right side condition bar Like.
             ScrollView:
                 size_hint:0.2,1
                 MDBoxLayout:
@@ -418,6 +462,7 @@
                     adaptive_size:True
                     #md_bg_color:"#FFFFFF"
                     spacing:5
+                    padding:10,0,0,0
 
                     MDBoxLayout:
                         id:ou_checked_item_box

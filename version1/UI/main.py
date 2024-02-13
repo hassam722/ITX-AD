@@ -1,4 +1,5 @@
-import object
+import object,os
+from kivymd.toast import toast
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.behaviors import CommonElevationBehavior
@@ -25,6 +26,17 @@ _dn = "dn"
 # screen names
 _export_adusers = "export_adusers"
 _adusers = "adusers"
+
+
+class FileExportWidget(MDBoxLayout):
+    def export_click(self):
+        print(self.parent.parent.parent.parent.ids)
+        file_name = self.ids.filename_field.text
+        if not file_name:
+            toast("Please enter the file name")
+            return
+            
+        print(os.getcwd())
 
 class CheckedItem(MDBoxLayout):
     name = StringProperty()
@@ -70,9 +82,10 @@ class AttributeField(MDBoxLayout):
         return self.children[0].text
     
 class SwitchBox(MDBoxLayout):
-
     text = StringProperty()
-    pass
+    
+    def get_status(self):
+        return self.children[0].active
 
 class ConditionValueItem(MDBoxLayout):
 
@@ -164,12 +177,25 @@ class ConditionFilterBox(MDBoxLayout):
     
     def get_condition_items(self):
         '''this function return dict object of condition : value'''
+        _like_or_equal = " -eq "
+        _and_or_OR = " -or "
 
-        temp_dict = {}
+        if self.ids.like_switch.get_status():
+            _like_or_equal =" -like "
+        
+        if self.ids.and_switch.get_status():
+            _and_or_OR = " -and "
+
+        length = len(self.ids.condition_container.children)
+        temp_list = []
+        i = 0
         for item in self.ids.condition_container.children:
-            temp_dict[item.condition] = item.get_value()
-
-        return temp_dict
+            i += 1
+            temp_str = item.condition + _like_or_equal  +"'"+ item.get_value()+"'"
+            temp_list.append(temp_str)
+            if length % 2 ==0 and not i >= length:
+                temp_list.append(_and_or_OR)
+        return temp_list
         
             
 
@@ -218,7 +244,7 @@ class HomeScreen(MDScreen):
                                                 ),
                                             ],
                                         )
-            self.ou_dialog.content_cls.data=object.OU_LIST
+            self.ou_dialog.content_cls.data=temp_list
             self.ou_dialog.content_cls.create_object_list()
             self.ou_dialog.content_cls.add_items()
             self.ou_dialog.content_cls.checked_data=list()
@@ -297,8 +323,8 @@ class HomeScreen(MDScreen):
 
     def add_conditions(self):
         self.ids.condition_item_box.clear_widgets()
-        dict_ = self.condition_dialog.content_cls.get_condition_items()
-        if dict_:
+        list_ = self.condition_dialog.content_cls.get_condition_items()
+        if list_:
             self.ids.condition_item_box.add_widget(
                 MDLabel(
                         text="Condition",
@@ -308,8 +334,8 @@ class HomeScreen(MDScreen):
                         bold = True)
             )
 
-        for key,value in dict_.items():
-            self.ids.condition_item_box.add_widget(MDLabel( text=key + " : " + value,
+        for item in list_:
+            self.ids.condition_item_box.add_widget(MDLabel( text=item,
                                                             size_hint=(None,None),
                                                             adaptive_size=True,
                                                             font_style ="Caption"
@@ -347,6 +373,22 @@ class HomeScreen(MDScreen):
         for item in list_:
             self.ids.attribute_box.add_widget(MDLabel(text=item,font_style='Caption',
                                                             size_hint=(None,None),adaptive_size=True))
+    
+    def submit_click(self):
+        self.ids.div1_2_1.clear_widgets()
+        if not self.ids.attribute_box.children or not self.ids.condition_item_box.children or not self.ids.ou_checked_item_box.children:
+            self.ids.div1_2_1.add_widget(MDLabel(
+                text = "NothingToExport",
+                pos_hint={'center_x':0.5,'center_y':0.5},
+                font_style='H4',
+                size_hint=(None,None),
+                adaptive_size = True
+
+            ))
+            return
+
+        self.ids.div1_2_1.add_widget(FileExportWidget())
+        pass
         
 
 class UsersScreen(MDScreen):

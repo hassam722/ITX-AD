@@ -11,12 +11,28 @@ from kivy.core.window import Window
 from kivymd.uix.list import ILeftBodyTouch,TwoLineIconListItem
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.label import MDLabel
+
 from kivy.properties import StringProperty
+
+from kivymd.uix.textfield import MDTextField
+
+# abc = MDTextField()
+# abc.
+
+
+
+
+
 
 
 
 from kivy.lang import Builder
 Builder.load_file('UI/main.kv')
+Builder.load_file('UI/AddBulkUser.kv')
+Builder.load_file('UI/EditBulkUser.kv')
+Builder.load_file('UI/DropDownButton.kv')
+
+
 
 # constants
 _name = "name"
@@ -26,6 +42,8 @@ _dn = "dn"
 # screen names
 _export_adusers = "export_adusers"
 _adusers = "adusers"
+_add_bulk_users ="AddBulkUsersScreen"
+_edit_bulk_users = "EditBulkUsersScreen" 
 
 
 class FileExportWidget(MDBoxLayout):
@@ -41,6 +59,10 @@ class FileExportWidget(MDBoxLayout):
 class CheckedItem(MDBoxLayout):
     name = StringProperty()
     dn = StringProperty()
+
+class DropDownButton(MDFlatButton):
+    icon = StringProperty()
+
 
 class BaseShadowWidget(CommonElevationBehavior):
     pass
@@ -391,9 +413,20 @@ class HomeScreen(MDScreen):
         pass
         
 
-class UsersScreen(MDScreen):
-
+class AddBulkUsers(MDScreen):
     pass
+
+class EditBulkUsers(MDScreen):
+    pass
+
+
+class UsersScreen(MDScreen):
+    
+    def AddBulkUsers_Screen(self):
+        self.ids.user_sm.current = _add_bulk_users
+
+    def EditBulkUsers_Screen(self):
+        self.ids.user_sm.current = _edit_bulk_users
 
 
 class ITX_AD(MDApp):

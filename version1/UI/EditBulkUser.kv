@@ -1,0 +1,44 @@
+<EditBulkUsers>:
+
+    MDBoxLayout:
+        orientation: "vertical"
+        size_hint:1,1
+        spacing:20
+        padding:0,30,0,0
+        
+        MDFloatLayout:
+            #orientation: "horizontal"
+            size_hint:1,None
+            #line_color: "black"
+            height:50
+            
+            DropDownButton:
+                text:"OU Filter"
+                pos_hint:{"center_y":0.5,"left":0.02}
+                color:"white"
+                md_bg_color:"#D9D9D9"
+                icon:"menu-down"
+                
+
+            # dropdown and edit button
+            MDRaisedButton:
+                text: "Edit Bulk"
+                md_bg_color:"#3333CC"
+                color:"white"
+                pos_hint:{"center_y":0.5,"right":0.98}
+
+        MDTextField:
+            id:choosefile_bar
+            icon_left:"magnify"
+            size_hint:1,None
+            mode:"fill"
+            fill_color_normal:"#D9D9D9"
+            radius:10,10,10,10
+            padding: 50,10,10,(self.height / 2.0 - (self.line_height / 2.0) * len(self._lines))
+            text:"Search"
+            active_line:False
+
+        
+        ScrollView:
+            size_hint:1,1
+

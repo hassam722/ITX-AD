@@ -1,3 +1,6 @@
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+
+
 <FileExportWidget>:
     orientation:'vertical'
     size_hint:None,None
@@ -296,6 +299,7 @@
         #adaptive_height:True
         line_color:'grey'
         line_width:1
+        effect_cls:StiffScrollEffect
         
 
         MDList:
@@ -331,15 +335,14 @@
     
 
 
-            
-
 
 <CenterBar>:
     orientation: 'vertical'
     TitleBar:
 
-    MDScreenManager:
+    ScreenManager:
         id:sm
+        transition:NoTransition()
 
         HomeScreen:
             name:"export_adusers"
@@ -520,28 +523,47 @@
                     text_color:0,0,0,1
                     icon:"account-group"
                     icon_color: "black"
+                    on_release:root.AddBulkUsers_Screen()
+
+#                MDRectangleFlatIconButton:
+#                    text: "Add Single User"
+#                    line_color:0,0,0,0
+#                    text_color:0,0,0,1
+#                    icon:"account"
+#                    icon_color: "black"
 
                 MDRectangleFlatIconButton:
-                    text: "Add Single User"
+                    text: "Edit Bulk Users"
                     line_color:0,0,0,0
                     text_color:0,0,0,1
-                    icon:"account"
+                    icon:"account-group"
                     icon_color: "black"
-
+                    on_release: root.EditBulkUsers_Screen()
 
 
             MDBoxLayout:
                 line_color:"gray"
                 size_hint:1,None
                 height:1
-                padding:0,0,30,0
         
         MDBoxLayout:
             id:div1_2
             orientation: 'vertical'
             size_hint:1,1
             #md_bg_color: "#FFF123"
+            padding:50,0,50,0
+            #line_color:"black"
 
 
+            ScreenManager:
+                id:user_sm
+                transition:NoTransition()
+
+                AddBulkUsers:
+                    name:"AddBulkUsersScreen"
+
+
+                EditBulkUsers:
+                    name:"EditBulkUsersScreen"
 
     

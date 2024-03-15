@@ -14,8 +14,9 @@
             
             DropDownButton:
                 text:"OU Filter"
-                pos_hint:{"center_y":0.5,"left":0.02}
+                pos_hint:{"center_y":0.5,"left":0.09}
                 icon:"menu-down"
+                on_release:root.FilterClick()
                 
 
             # dropdown and edit button
@@ -25,6 +26,8 @@
                 color:"white"
                 pos_hint:{"center_y":0.5,"right":0.98}
 
+
+        #Search Bar
         MDTextField:
             id:choosefile_bar
             icon_left:"magnify"
@@ -35,15 +38,13 @@
             padding: 50,10,10,(self.height / 2.0 - (self.line_height / 2.0) * len(self._lines))
             text:"Search"
             active_line:False
+            on_text:root.on_text_change(self)
 
         
         ScrollView:
             size_hint:1,1
 
             MDList:
-
-                UserEditListItem:
-                    text:"Hassam"
-                    secondary_text:"dn:hassam"
-                    icon_left:"Account"
+                id:user_list
+                
 

@@ -299,7 +299,7 @@
         #adaptive_height:True
         line_color:'grey'
         line_width:1
-        effect_cls:StiffScrollEffect
+        #effect_cls:StiffScrollEffect
         
 
         MDList:
@@ -518,12 +518,13 @@
                 padding:50,0,0,0
                 
                 MDRectangleFlatIconButton:
+                    id:AddBulkUsersButton 
                     text: "Add Bulk Users"
                     line_color:"#3333CC"
                     text_color:0,0,0,1
                     icon:"account-group"
                     icon_color: "black"
-                    on_release:root.AddBulkUsers_Screen()
+                    on_release:root.AddBulkUsers_Screen(self)
 
 #                MDRectangleFlatIconButton:
 #                    text: "Add Single User"
@@ -533,12 +534,13 @@
 #                    icon_color: "black"
 
                 MDRectangleFlatIconButton:
+                    id:EditBulkUsersButton
                     text: "Edit Bulk Users"
                     line_color:0,0,0,0
                     text_color:0,0,0,1
                     icon:"account-group"
                     icon_color: "black"
-                    on_release: root.EditBulkUsers_Screen()
+                    on_release: root.EditBulkUsers_Screen(self)
 
 
             MDBoxLayout:
@@ -565,5 +567,6 @@
 
                 EditBulkUsers:
                     name:"EditBulkUsersScreen"
+                    
 
     

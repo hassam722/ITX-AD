@@ -4,19 +4,18 @@ from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.behaviors import CommonElevationBehavior
 from kivymd.uix.button import MDRoundFlatButton,MDFlatButton
+from kivymd.uix.button import BaseButton
 from kivy.utils import rgba
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.dialog import MDDialog
 from kivy.core.window import Window
-from kivymd.uix.list import ILeftBodyTouch,TwoLineIconListItem
+from kivymd.uix.list import ILeftBodyTouch,TwoLineIconListItem,TwoLineAvatarIconListItem
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.label import MDLabel
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.properties import StringProperty
-from kivymd.uix.list import IconLeftWidget
-from kivymd.uix.textfield import MDTextField
-from kivymd.uix.behaviors import RectangularRippleBehavior
-
+from kivymd.uix.behaviors import RectangularRippleBehavior,DeclarativeBehavior
+from kivymd.theming import ThemableBehavior
 # abc = MDTextField()
 # abc.
 
@@ -32,6 +31,8 @@ Builder.load_file('UI/main.kv')
 Builder.load_file('UI/AddBulkUser.kv')
 Builder.load_file('UI/EditBulkUser.kv')
 Builder.load_file('UI/DropDownButton.kv')
+Builder.load_file('UI/UserEditListItem.kv')
+
 
 
 
@@ -62,16 +63,15 @@ class CheckedItem(MDBoxLayout):
     dn = StringProperty()
 
 
-class UserEditListItem(TwoLineIconListItem):
-    text = StringProperty()
-    secondary_text = StringProperty()
+class UserEditListItem(TwoLineAvatarIconListItem):
     icon_left = StringProperty()
+    icon_right = StringProperty()
+
     
 
-class DropDownButton(ButtonBehavior,RectangularRippleBehavior,MDBoxLayout):
+class DropDownButton(MDBoxLayout,BaseButton):
     icon = StringProperty()
     text = StringProperty()
-
 
 class BaseShadowWidget(CommonElevationBehavior):
     pass
@@ -125,10 +125,7 @@ class ConditionValueItem(MDBoxLayout):
         self.parent.remove_widget(self)
     def get_value(self):
         return self.children[0].text
-        
-    
-    
-
+           
 class FilterDialog(MDDialog):
 
     def open(self):
@@ -139,8 +136,6 @@ class FilterDialog(MDDialog):
     
     def get_attribute_list(self):
         return self.content_cls.get_attribute_list()
-
-
 
 class FilterItem(MDBoxLayout):
 
@@ -195,7 +190,6 @@ class FilterItem(MDBoxLayout):
         gen_obj =self.search_item(text)
         self.add_items(gen_obj)
 
-
 class ConditionFilterBox(MDBoxLayout):
 
     def add_click(self):
@@ -228,8 +222,6 @@ class ConditionFilterBox(MDBoxLayout):
                 temp_list.append(_and_or_OR)
         return temp_list
         
-            
-
 class AttributeFilterBox(MDBoxLayout):
     
     def add_attribute(self):
@@ -242,9 +234,6 @@ class AttributeFilterBox(MDBoxLayout):
             if obj.get_attribute()!="":
                 temp_list.append(obj.get_attribute())
         return temp_list
-
-    
-    
 
 class HomeScreen(MDScreen):
     # item = ListItemWithCheckbox()
@@ -421,21 +410,96 @@ class HomeScreen(MDScreen):
         self.ids.div1_2_1.add_widget(FileExportWidget())
         pass
         
-
 class AddBulkUsers(MDScreen):
     pass
 
 class EditBulkUsers(MDScreen):
-    pass
+    OuDialog = None
+    entered = False
+
+    def FilterClick(self):
+        print("Filter Click")
+        temp_list = [{"name":"HR","dn":"CN=HR,DC=ITX,DC=com"},{"name":"Admin","dn":"CN=Admin,DC=ITX,DC=com"},{"name":"Finance","dn":"CN=Finance,DC=ITX,DC=com"},
+                            {"name":"Security","dn":"CN=Security,DC=ITX,DC=com"}]
+        if not self.OuDialog:
+            filter_item = FilterItem(hint_text = "Search OU")
+            filter_item.data = temp_list
+            filter_item.create_object_list()
+            filter_item.add_items()
+            filter_item.checked_data=list()
+            self.OuDialog = MDDialog(
+                size_hint=(0.5,None),
+                type="custom",
+                title="Filter",
+                content_cls=filter_item,
+                buttons=[
+                        MDFlatButton(
+                            text="OK",
+                            theme_text_color="Custom",
+                            text_color=rgba("#3333CC"),
+                            # on_release=lambda x: self.ok_click()
+                        ),
+                    ],
+
+            )
+        self.OuDialog.open()
+
+    def on_enter(self):
+        if not self.entered:
+            self.AddUsers(object.USER_LIST)
+            self.entered = True
+
+    def AddUsers(self,temp_list):
+
+        if temp_list:
+            for user in temp_list:
+                self.ids.user_list.add_widget(self.create_user_edit_list_item(user["name"],user["dn"]))
+
+    def remove_items(self):
+        self.ids.user_list.clear_widgets()
+
+    def on_text_change(self,search_bar):
+        self.remove_items()
+        text = search_bar.text
+        gen_obj = self.search_item(text)
+        if gen_obj:
+            self.AddUsers(gen_obj)
+        elif text=="":
+            self.AddUsers(object.USER_LIST)
+        
+
+    def search_item(self,search_word:str=None):
+        temp_list =[]
+        if search_word:
+            temp_list.append(item for item in object.USER_LIST if item['name'].upper().startswith(search_word.upper()))
+            return temp_list[0] ## it gives the generator object
+        return temp_list        
+
+    
+    def create_user_edit_list_item(self,name,dn):
+        return UserEditListItem(text=name,
+                                secondary_text=dn,
+                                icon_left="account",
+                                icon_right="square-edit-outline"
+                            )
+
 
 
 class UsersScreen(MDScreen):
-    
-    def AddBulkUsers_Screen(self):
+    def AddBulkUsers_Screen(self,button):
+        button.line_color="#3333CC"
+        if self.ids.EditBulkUsersButton.line_color:
+            self.ids.EditBulkUsersButton.line_color=[0,0,0,0]
         self.ids.user_sm.current = _add_bulk_users
 
-    def EditBulkUsers_Screen(self):
+    def EditBulkUsers_Screen(self,button):
+        button.line_color="#3333CC"
+        if self.ids.AddBulkUsersButton.line_color:
+            self.ids.AddBulkUsersButton.line_color=[0,0,0,0]
         self.ids.user_sm.current = _edit_bulk_users
+
+   
+
 
 
 class ITX_AD(MDApp):

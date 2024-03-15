@@ -15,8 +15,6 @@
             DropDownButton:
                 text:"OU Filter"
                 pos_hint:{"center_y":0.5,"left":0.02}
-                color:"white"
-                md_bg_color:"#D9D9D9"
                 icon:"menu-down"
                 
 
@@ -41,4 +39,11 @@
         
         ScrollView:
             size_hint:1,1
+
+            MDList:
+
+                UserEditListItem:
+                    text:"Hassam"
+                    secondary_text:"dn:hassam"
+                    icon_left:"Account"
 

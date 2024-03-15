@@ -11,10 +11,11 @@ from kivy.core.window import Window
 from kivymd.uix.list import ILeftBodyTouch,TwoLineIconListItem
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.label import MDLabel
-
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.properties import StringProperty
-
+from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.textfield import MDTextField
+from kivymd.uix.behaviors import RectangularRippleBehavior
 
 # abc = MDTextField()
 # abc.
@@ -60,8 +61,16 @@ class CheckedItem(MDBoxLayout):
     name = StringProperty()
     dn = StringProperty()
 
-class DropDownButton(MDFlatButton):
+
+class UserEditListItem(TwoLineIconListItem):
+    text = StringProperty()
+    secondary_text = StringProperty()
+    icon_left = StringProperty()
+    
+
+class DropDownButton(ButtonBehavior,RectangularRippleBehavior,MDBoxLayout):
     icon = StringProperty()
+    text = StringProperty()
 
 
 class BaseShadowWidget(CommonElevationBehavior):

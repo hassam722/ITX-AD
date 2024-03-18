@@ -12,10 +12,9 @@ from kivy.core.window import Window
 from kivymd.uix.list import ILeftBodyTouch,TwoLineIconListItem,TwoLineAvatarIconListItem
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.label import MDLabel
-from kivy.uix.behaviors import ButtonBehavior
+from kivy.clock import Clock
 from kivy.properties import StringProperty
-from kivymd.uix.behaviors import RectangularRippleBehavior,DeclarativeBehavior
-from kivymd.theming import ThemableBehavior
+
 # abc = MDTextField()
 # abc.
 
@@ -55,7 +54,6 @@ class FileExportWidget(MDBoxLayout):
         if not file_name:
             toast("Please enter the file name")
             return
-            
         print(os.getcwd())
 
 class CheckedItem(MDBoxLayout):
@@ -416,6 +414,7 @@ class AddBulkUsers(MDScreen):
 class EditBulkUsers(MDScreen):
     OuDialog = None
     entered = False
+    user_list = None
 
     def FilterClick(self):
         print("Filter Click")
@@ -437,16 +436,25 @@ class EditBulkUsers(MDScreen):
                             text="OK",
                             theme_text_color="Custom",
                             text_color=rgba("#3333CC"),
-                            # on_release=lambda x: self.ok_click()
+                            on_release=lambda x: self.ok_click()
                         ),
                     ],
 
             )
         self.OuDialog.open()
 
+    def ok_click(self):
+        Clock.schedule_once(lambda dt: self.search_users_according_checked_ou(self.OuDialog.content_cls.checked_data,
+                                                                              object.OU_LIST), 0.5)
+
+    def search_users_according_checked_ou(self,checked_ou_list,user_list):
+        print("funct called")
+        pass
+
     def on_enter(self):
         if not self.entered:
-            self.AddUsers(object.USER_LIST)
+            self.user_list = list(object.USER_LIST)
+            self.AddUsers(self.user_list)
             self.entered = True
 
     def AddUsers(self,temp_list):
@@ -461,17 +469,17 @@ class EditBulkUsers(MDScreen):
     def on_text_change(self,search_bar):
         self.remove_items()
         text = search_bar.text
-        gen_obj = self.search_item(text)
+        gen_obj = self.search_item(self.user_list,text)
         if gen_obj:
             self.AddUsers(gen_obj)
         elif text=="":
-            self.AddUsers(object.USER_LIST)
+            self.AddUsers(self.user_list)
         
 
-    def search_item(self,search_word:str=None):
+    def search_item(self,_list,search_word:str=None):
         temp_list =[]
         if search_word:
-            temp_list.append(item for item in object.USER_LIST if item['name'].upper().startswith(search_word.upper()))
+            temp_list.append(item for item in _list if item['name'].upper().startswith(search_word.upper()))
             return temp_list[0] ## it gives the generator object
         return temp_list        
 

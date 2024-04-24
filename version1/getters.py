@@ -4,13 +4,15 @@ from ad_script import all_ou_query,execute
 
 
 #threads
-def create_OU_thread():
-    thread = threading.Thread(target=get_all_OU)
+def create_OU_thread(func):
+    thread = threading.Thread(target=func)
     thread.start()
 
 
 
 
+def get_users():
+    print("users")
 
 
 
